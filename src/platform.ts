@@ -13,6 +13,11 @@ import { PrusalinkPlatformAccessory } from "./platformAccessory";
 import { Config } from "./config";
 import { Info } from "./api";
 
+export interface AccessoryContext {
+  config: Config;
+  info: Info;
+}
+
 /**
  * HomebridgePlatform
  * This class is the main constructor for your plugin, this is where you should
@@ -24,10 +29,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
     this.api.hap.Characteristic;
 
   // this is used to track restored cached accessories
-  public readonly accessories: PlatformAccessory<{
-    config: Config;
-    info: Info;
-  }>[] = [];
+  public readonly accessories: PlatformAccessory<AccessoryContext>[] = [];
 
   constructor(
     public readonly log: Logger,
@@ -65,9 +67,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
    * This function is invoked when homebridge restores cached accessories from disk at startup.
    * It should be used to setup event handlers for characteristics and update respective values.
    */
-  configureAccessory(
-    accessory: PlatformAccessory<{ config: Config; info: Info }>,
-  ) {
+  configureAccessory(accessory: PlatformAccessory<AccessoryContext>) {
     this.log.info("Loading accessory from cache:", accessory.displayName);
 
     // add the restored accessory to the accessories cache so we can track if it has already been registered
@@ -111,20 +111,9 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
 
     // see if an accessory with the same uuid has already been registered and restored from
     // the cached devices we stored in the `configureAccessory` method above
-    let existingAccessory = this.accessories.find(
+    const existingAccessory = this.accessories.find(
       (accessory) => accessory.UUID === uuid,
     );
-    if (
-      existingAccessory &&
-      existingAccessory.context.info.serial !== info.serial
-    ) {
-      this.log.warn("serial number mismatch, unregistering old accessory");
-      this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-        existingAccessory,
-      ]);
-      existingAccessory = undefined;
-    }
-
     if (existingAccessory) {
       // the accessory already exists
       this.log.info(

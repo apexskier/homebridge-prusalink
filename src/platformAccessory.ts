@@ -1,18 +1,14 @@
 import { Service, PlatformAccessory } from "homebridge";
 
-import { PrusalinkHomebridgePlatform } from "./platform";
+import { AccessoryContext, PrusalinkHomebridgePlatform } from "./platform";
 import { Info, StatusPrinter } from "./api";
-import { Config } from "./config";
 
 export class PrusalinkPlatformAccessory {
   private tempService: Service;
 
   constructor(
     private readonly platform: PrusalinkHomebridgePlatform,
-    private readonly accessory: PlatformAccessory<{
-      config: Config;
-      info: Info;
-    }>,
+    private readonly accessory: PlatformAccessory<AccessoryContext>,
   ) {
     // set accessory information
     const accessoryCharacteristics = this.accessory
@@ -86,6 +82,7 @@ export class PrusalinkPlatformAccessory {
           // inactive if "cooling down" (temps are way different than each other)
           Math.abs(status.printer.temp_nozzle - status.printer.temp_bed) <
             this.accessory.context.config.maxDelta;
+        // possible improvement - track state and force inactive for some fixed time after active
         this.tempService
           .getCharacteristic(this.platform.Characteristic.StatusActive)
           .setValue(active);

@@ -1,24 +1,19 @@
+// generated from https://github.com/prusa3d/Prusa-Link-Web/blob/377e1509542100efe1689415d603d7a330d28d3c/spec/openapi.yaml
+
 export class StatusPrinterStatusPrinter {
   "ok"?: boolean;
   "message"?: string;
 }
 
-/**
- * Telemetry info about printer, all values except state are optional
- */
 export interface StatusPrinter {
   state: StatusPrinterStateEnum;
   temp_nozzle?: number;
   target_nozzle?: number;
   temp_bed?: number;
   target_bed?: number;
-  /**
-   * Available only when printer is not moving
-   */
+  // Available only when printer is not moving
   axis_x?: number;
-  /**
-   * Available only when printer is not moving
-   */
+  // Available only when printer is not moving
   axis_y?: number;
   axis_z?: number;
   flow?: number;
@@ -37,7 +32,7 @@ export enum StatusPrinterStateEnum {
   Finished = "FINISHED",
   Stopped = "STOPPED",
   Error = "ERROR",
-  Atttention = "ATTTENTION",
+  Atttention = "ATTTENTION", // sic
   Ready = "READY",
 }
 
