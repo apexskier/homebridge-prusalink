@@ -1,7 +1,7 @@
 {
   "displayName": "PrusaLink",
   "name": "@apexskier/homebridge-prusalink",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Use your Prusa 3D printer as a temperature sensor.",
   "license": "Apache-2.0",
   "repository": {
