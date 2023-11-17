@@ -70,8 +70,17 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
   configureAccessory(accessory: PlatformAccessory<AccessoryContext>) {
     this.log.info("Loading accessory from cache:", accessory.displayName);
 
-    // add the restored accessory to the accessories cache so we can track if it has already been registered
-    this.accessories.push(accessory);
+    // the accessory already exists
+    this.log.info(
+      "Restoring existing accessory from cache:",
+      accessory.displayName,
+      accessory.context.info.serial,
+    );
+
+    accessory.context.config = this.config as unknown as Config;
+    this.api.updatePlatformAccessories([accessory]);
+
+    new PrusalinkPlatformAccessory(this, accessory);
   }
 
   async discoverDevices() {
@@ -119,25 +128,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
 
     const uuid = this.api.hap.uuid.generate(info.serial);
 
-    // see if an accessory with the same uuid has already been registered and restored from
-    // the cached devices we stored in the `configureAccessory` method above
-    const existingAccessory = this.accessories.find(
-      (accessory) => accessory.UUID === uuid,
-    );
-    if (existingAccessory) {
-      // the accessory already exists
-      this.log.info(
-        "Restoring existing accessory from cache:",
-        existingAccessory.displayName,
-        existingAccessory.context.info.serial,
-      );
-
-      existingAccessory.context.info = info;
-      existingAccessory.context.config = config;
-      this.api.updatePlatformAccessories([existingAccessory]);
-
-      new PrusalinkPlatformAccessory(this, existingAccessory);
-    } else {
+    if (!this.accessories.find((accessory) => accessory.UUID === uuid)) {
       this.log.info("Adding new accessory");
 
       // create a new accessory
