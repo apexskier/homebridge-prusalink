@@ -77,10 +77,20 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
   async discoverDevices() {
     const config = this.config as unknown as Config;
 
-    const response = await fetch(
-      new URL("/api/v1/info", `http://${config.ip}`).toString(),
-      { headers: { "X-Api-Key": config.password } },
-    );
+    let response: Response;
+    try {
+      response = await fetch(
+        new URL("/api/v1/info", `http://${config.ip}`).toString(),
+        { headers: { "X-Api-Key": config.password } },
+      );
+    } catch (err) {
+      this.log.error("Failed to connect to printer, trying in 10 seconds");
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          this.discoverDevices().then(resolve);
+        }, 10000);
+      });
+    }
 
     if (!response.ok) {
       throw new this.api.hap.HapStatusError(

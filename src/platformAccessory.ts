@@ -42,13 +42,24 @@ export class PrusalinkPlatformAccessory {
       .getCharacteristic(this.platform.Characteristic.CurrentTemperature)
       .onGet(async () => {
         this.platform.log.debug("Fetching status");
-        const response = await fetch(
-          new URL(
-            "/api/v1/status",
-            `http://${this.accessory.context.config.ip}`,
-          ).toString(),
-          { headers: { "X-Api-Key": this.accessory.context.config.password } },
-        );
+
+        let response: Response;
+        try {
+          response = await fetch(
+            new URL(
+              "/api/v1/status",
+              `http://${this.accessory.context.config.ip}`,
+            ).toString(),
+            {
+              headers: { "X-Api-Key": this.accessory.context.config.password },
+            },
+          );
+        } catch (error) {
+          this.platform.log.debug("failed to fetch status");
+          throw new this.platform.api.hap.HapStatusError(
+            this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
+          );
+        }
 
         if (!response.ok) {
           throw new this.platform.api.hap.HapStatusError(
