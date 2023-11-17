@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apexskier/homebridge-prusalink.git"
+    "url": "git+https://github.com/apexskier/homebridge-prusalink.git"
   },
   "bugs": {
     "url": "https://github.com/apexskier/homebridge-prusalink/issues"
