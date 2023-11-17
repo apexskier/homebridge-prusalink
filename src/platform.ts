@@ -81,6 +81,8 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
     this.api.updatePlatformAccessories([accessory]);
 
     new PrusalinkPlatformAccessory(this, accessory);
+
+    this.accessories.push(accessory);
   }
 
   async discoverDevices() {

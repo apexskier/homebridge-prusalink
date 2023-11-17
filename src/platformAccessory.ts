@@ -120,6 +120,7 @@ export class PrusalinkPlatformAccessory {
           // use average temp as the actual value, it's kind of annoying to deal with two sensors
           return (status.printer.temp_nozzle + status.printer.temp_bed) / 2;
         } catch (error) {
+          this.platform.log.error("error getting temperature", error);
           this.tempService
             .getCharacteristic(this.platform.Characteristic.StatusActive)
             .setValue(false);
