@@ -120,7 +120,15 @@ export class PrusalinkPlatformAccessory {
           // use average temp as the actual value, it's kind of annoying to deal with two sensors
           return (status.printer.temp_nozzle + status.printer.temp_bed) / 2;
         } catch (error) {
-          this.platform.log.error("error getting temperature", error);
+          if (
+            error instanceof this.platform.api.hap.HapStatusError &&
+            error.hapStatus === this.platform.api.hap.HAPStatus.RESOURCE_BUSY
+          ) {
+            // this is expected if the printer is busy
+            this.platform.log.debug("printer busy");
+          } else {
+            this.platform.log.error("error getting temperature", error);
+          }
           this.tempService
             .getCharacteristic(this.platform.Characteristic.StatusActive)
             .setValue(false);
