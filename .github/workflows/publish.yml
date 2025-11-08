@@ -4,7 +4,6 @@ on:
   push:
     tags:
       - "v*"
-  workflow_call:
 
 concurrency:
   group: publish
@@ -15,16 +14,4 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org
-
-      - name: Verify version matches tag
-        run: test "$(npm pkg get version)" = "\"${GITHUB_REF#refs/tags/v}\""
-      - run: npm ci
-      - run: npm publish # this runs prepare
+    uses: apexskier/homebridge-workflows/.github/workflows/publish.yml@main
